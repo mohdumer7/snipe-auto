@@ -1,26 +1,23 @@
-// src/risk-management/risk-management.controller.ts
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { RiskManagementService } from './risk-management.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { SetRiskConfigDto } from './dto/set-risk-config.dto';
 
 @Controller('risk-management')
-@UseGuards(JwtAuthGuard) // Protect endpoints with JWT authentication
+@UseGuards(JwtAuthGuard)
 export class RiskManagementController {
   constructor(private riskService: RiskManagementService) {}
 
-  // Endpoint to set or update risk configuration.
   @Post('set')
-  async setRiskConfig(@Body() config: { userWalletAddress: string; portfolioStopLoss: number; trailingStop?: number; }) {
-    return this.riskService.setRiskConfig(config);
+  async setRiskConfig(@Body() setRiskConfigDto: SetRiskConfigDto) {
+    return this.riskService.setRiskConfig(setRiskConfigDto);
   }
 
-  // Endpoint to retrieve the risk configuration for a user.
   @Get(':userWalletAddress')
   async getRiskConfig(@Param('userWalletAddress') userWalletAddress: string) {
     return this.riskService.getRiskConfig(userWalletAddress);
   }
 
-  // Endpoint to check if risk thresholds are triggered.
   @Get('check/:userWalletAddress')
   async checkRisk(@Param('userWalletAddress') userWalletAddress: string) {
     return this.riskService.checkRisk(userWalletAddress);

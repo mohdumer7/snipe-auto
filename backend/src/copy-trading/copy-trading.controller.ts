@@ -1,26 +1,18 @@
-// src/copy-trading/copy-trading.controller.ts
 import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { CopyTradingService } from './copy-trading.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { FollowWalletDto } from './dto/follow-wallet.dto';
 
 @Controller('copy-trading')
+@UseGuards(JwtAuthGuard)
 export class CopyTradingController {
   constructor(private copyTradingService: CopyTradingService) {}
 
-  // Endpoint to follow a leader wallet.
   @Post('follow')
-  async followWallet(
-    @Body() data: {
-      userWalletAddress: string;
-      leaderWalletAddress: string;
-      allocation: number;
-      maxPerTrade?: number;
-    },
-  ) {
-    return this.copyTradingService.followWallet(data);
+  async followWallet(@Body() followWalletDto: FollowWalletDto) {
+    return this.copyTradingService.followWallet(followWalletDto);
   }
 
-  // List followed wallets for a given user.
   @Get(':userWalletAddress')
   async getFollowedWallets(@Param('userWalletAddress') userWalletAddress: string) {
     return this.copyTradingService.getFollowedWallets(userWalletAddress);

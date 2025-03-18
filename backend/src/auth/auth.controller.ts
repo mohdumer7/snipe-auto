@@ -1,24 +1,28 @@
 // src/auth/auth.controller.ts
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { ChallengeDto } from './dto/challenge.dto';
+import { VerifyDto } from './dto/verify.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // Endpoint to generate a challenge message for the given wallet address
   @Post('challenge')
-  async getChallenge(@Body('walletAddress') walletAddress: string) {
-    return this.authService.generateChallenge(walletAddress);
+  async getChallenge(@Body() challengeDto: ChallengeDto) {
+    return this.authService.generateChallenge(challengeDto.walletAddress);
   }
 
-  // Endpoint to verify the signature and return a JWT token
   @Post('verify')
-  async verify(@Body() payload: { walletAddress: string; signature: string; challenge: string }) {
-    const isValid = this.authService.verifySignature(payload.challenge, payload.signature, payload.walletAddress);
+  async verify(@Body() verifyDto: VerifyDto) {
+    const isValid = this.authService.verifySignature(
+      verifyDto.challenge,
+      verifyDto.signature,
+      verifyDto.walletAddress,
+    );
     if (!isValid) {
       throw new BadRequestException('Invalid signature');
     }
-    return this.authService.login(payload.walletAddress);
+    return this.authService.login(verifyDto.walletAddress);
   }
 }

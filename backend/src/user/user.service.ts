@@ -1,5 +1,5 @@
 // src/user/user.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -12,19 +12,33 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
+   // Retrieve a user by wallet address.
+   async getUserByWalletAddress(walletAddress: string): Promise<User> {
+    const user = await this.userModel.findOne({ walletAddress }).exec();
+    if (!user) {
+      throw new NotFoundException(`User with wallet address ${walletAddress} not found.`);
+    }
+    return user;
+  }
+
+  // Create a new user if one doesn't exist, including generating a sub-wallet.
   async createUserIfNotExists(walletAddress: string): Promise<User> {
     let user = await this.userModel.findOne({ walletAddress }).exec();
     if (!user) {
-      // Generate a new sub-wallet (Solana keypair)
+      // For demonstration, generate a new sub-wallet Keypair.
+      // In production, use secure encryption and key management.
+      const { Keypair } = require('@solana/web3.js');
       const keypair = Keypair.generate();
-      // Encrypt the secret key (for production, consider a more robust encryption mechanism)
-      const encryptedSecretKey = this.encrypt(keypair.secretKey);
-      const createdUser = new this.userModel({
+
+      // For demonstration, encrypt using base64 (NOT production-ready).
+      const encryptedPrivateKey = Buffer.from(keypair.secretKey).toString('base64');
+      
+      user = new this.userModel({
         walletAddress,
         subWalletPublicKey: keypair.publicKey.toBase58(),
-        subWalletEncryptedPrivateKey: encryptedSecretKey,
+        subWalletEncryptedPrivateKey: encryptedPrivateKey,
       });
-      user = await createdUser.save();
+      await user.save();
     }
     return user;
   }

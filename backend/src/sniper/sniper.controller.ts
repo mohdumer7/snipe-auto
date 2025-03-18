@@ -1,22 +1,20 @@
-// src/sniper/sniper.controller.ts
 import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
-import { SniperService, SniperConfig } from './sniper.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { SniperService } from './sniper.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateSniperDto } from './dto/create-sniper.dto';
 
 @Controller('sniper')
 @UseGuards(JwtAuthGuard)
 export class SniperController {
   constructor(private sniperService: SniperService) {}
 
-  // Endpoint to create a new sniper configuration.
   @Post('create')
-  createSniper(@Body() config: SniperConfig): SniperConfig {
-    return this.sniperService.createSniperConfig(config);
+  createSniper(@Body() createSniperDto: CreateSniperDto) {
+    return this.sniperService.createSniperConfig(createSniperDto);
   }
 
-  // Endpoint to list all sniper configurations.
   @Get()
-  getSniperConfigs(): SniperConfig[] {
+  getSniperConfigs() {
     return this.sniperService.getSniperConfigs();
   }
 }

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autosnipe-api
+  labels:
+    app: autosnipe
+spec:
+  replicas: 3  # Adjust based on expected load
+  selector:
+    matchLabels:
+      app: autosnipe
+  template:
+    metadata:
+      labels:
+        app: autosnipe
+    spec:
+      containers:
+        - name: autosnipe-api
+          image: your-docker-repo/autosnipe-api:latest  # Replace with your image repository and tag
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: autosnipe-secrets
+                  key: mongo-uri
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: autosnipe-secrets
+                  key: jwt-secret
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: autosnipe-secrets
+                  key: encryption-key
+            - name: ALLOWED_ORIGINS
+              value: "https://yourdomain.com,https://anotherdomain.com"
+          readinessProbe:
+            httpGet:
+              path: /health  # Ensure you have a simple health endpoint
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 20
