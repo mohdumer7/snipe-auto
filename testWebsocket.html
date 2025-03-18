@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+  <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+</head>
+<body>
+  <script>
+    const socket = io('http://localhost:3000');
+    
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket');
+      socket.emit('subscribeToNotifications', { subscribe: true });
+    });
+    
+    socket.on('tradeUpdate', (data) => {
+      console.log('Trade update:', data);
+    });
+    
+    socket.on('tokenUpdate', (data) => {
+      console.log('Token update:', data);
+    });
+  </script>
+</body>
+</html>
