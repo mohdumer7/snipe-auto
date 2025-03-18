@@ -1,11 +1,12 @@
-// src/multi-chain/multi-chain.module.ts
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MultiChainService } from './multi-chain.service';
-import { MultiChainController } from './multi-chain.controller';
+import { SolanaChainService } from './solana-chain.service';
+import { EthereumChainService } from './ethereum-chain.service';
 
 @Module({
-  providers: [MultiChainService],
-  controllers: [MultiChainController],
+  imports: [ConfigModule],
+  providers: [MultiChainService, SolanaChainService, EthereumChainService],
   exports: [MultiChainService],
 })
 export class MultiChainModule {}

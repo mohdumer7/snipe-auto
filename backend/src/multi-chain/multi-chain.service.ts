@@ -1,25 +1,29 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Connection as SolanaConnection } from '@solana/web3.js';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { IChainService } from './chain.interface';
+import { SolanaChainService } from './solana-chain.service';
+import { EthereumChainService } from './ethereum-chain.service';
 
 @Injectable()
 export class MultiChainService {
   private readonly logger = new Logger(MultiChainService.name);
-  private solanaConnection: SolanaConnection;
-  private ethereumProvider: JsonRpcProvider;
+  private chainServices: { [key: string]: IChainService };
 
-  constructor(private configService: ConfigService) {
-    const solanaRpc = this.configService.get<string>('SOLANA_RPC_URL') || 'https://api.devnet.solana.com';
-    const ethereumRpc = this.configService.get<string>('ETHEREUM_RPC_URL') || 'https://goerli.infura.io/v3/YOUR_INFURA_KEY';
-
-    this.logger.log(`MultiChainService connecting to Solana: ${solanaRpc} and Ethereum: ${ethereumRpc}`);
-    this.solanaConnection = new SolanaConnection(solanaRpc, 'confirmed');
-    this.ethereumProvider = new JsonRpcProvider(ethereumRpc);
+  constructor(
+    private configService: ConfigService,
+    private solanaChainService: SolanaChainService,
+    private ethereumChainService: EthereumChainService,
+  ) {
+    // Map chain names to their implementations.
+    this.chainServices = {
+      solana: this.solanaChainService,
+      ethereum: this.ethereumChainService,
+      // Add additional chain services as needed.
+    };
   }
 
   async getTokensByChain(chain: string): Promise<any[]> {
-    // Dummy implementation: return different tokens based on the chain.
+    // Dummy implementation: return tokens based on the provided chain.
     if (chain.toLowerCase() === 'ethereum') {
       return [
         {
@@ -43,7 +47,7 @@ export class MultiChainService {
         },
       ];
     } else {
-      // Default: assume Solana
+      // Default to Solana.
       return [
         {
           name: 'SOL_MEME1',
@@ -57,15 +61,21 @@ export class MultiChainService {
     }
   }
 
-  async buyTokenOnSolana(userWallet: string, tokenMint: string, amount: number): Promise<any> {
-    this.logger.log(`Buying token on Solana for wallet ${userWallet}`);
-    // Production implementation goes here.
-    return { success: true };
+  async buyToken(chain: string, userWallet: string, tokenAddress: string, amount: number): Promise<any> {
+    this.logger.log(`MultiChainService: Processing buy for chain ${chain}`);
+    const service = this.chainServices[chain.toLowerCase()];
+    if (!service) {
+      throw new Error(`Chain service for ${chain} is not supported.`);
+    }
+    return service.buyToken(userWallet, tokenAddress, amount);
   }
 
-  async buyTokenOnEthereum(userWallet: string, tokenAddress: string, amount: number): Promise<any> {
-    this.logger.log(`Buying token on Ethereum for wallet ${userWallet}`);
-    // Production implementation goes here.
-    return { success: true };
+  async sellToken(chain: string, userWallet: string, tokenAddress: string, amount: number): Promise<any> {
+    this.logger.log(`MultiChainService: Processing sell for chain ${chain}`);
+    const service = this.chainServices[chain.toLowerCase()];
+    if (!service) {
+      throw new Error(`Chain service for ${chain} is not supported.`);
+    }
+    return service.sellToken(userWallet, tokenAddress, amount);
   }
 }
