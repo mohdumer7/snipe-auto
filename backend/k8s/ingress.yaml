@@ -6,17 +6,17 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: api.yourdomain.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: autosnipe-service
-                port:
-                  number: 80
+  - host: api.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: autosnipe-service
+            port:
+              number: 80
   tls:
-    - hosts:
-        - api.yourdomain.com
-      secretName: your-tls-secret
+  - hosts:
+    - api.yourdomain.com
+    secretName: your-tls-secret

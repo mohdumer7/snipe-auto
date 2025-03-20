@@ -15,6 +15,10 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
 
     steps:
       - uses: actions/checkout@v3
@@ -33,4 +37,11 @@ jobs:
       - name: Build application
         run: npm run build
 
-      # Optionally, add steps for linting and security scanning
+      - name: Build Docker image
+        run: docker build -t your-docker-repo/autosnipe-api:latest .
+
+      # Optionally, push the Docker image to a registry.
+      # - name: Login to Docker Hub
+      #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      # - name: Push Docker Image
+      #   run: docker push your-docker-repo/autosnipe-api:latest

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autosnipe-api
+  labels:
+    app: autosnipe
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: autosnipe
+  template:
+    metadata:
+      labels:
+        app: autosnipe
+    spec:
+      containers:
+      - name: autosnipe-api
+        image: your-docker-repo/autosnipe-api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: mongo-uri
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: jwt-secret
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: encryption-key
+        - name: ALLOWED_ORIGINS
+          value: "https://yourdomain.com,https://anotherdomain.com"
+        - name: RPC_PROVIDER_URL
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: rpc-provider-url
+        - name: SOLANA_RPC_URL
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: solana-rpc-url
+        - name: ETHEREUM_RPC_URL
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: ethereum-rpc-url
+        - name: TOKEN_MONITOR_PROGRAM_ID
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: token-monitor-program-id
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: AWS_REGION
+          value: "us-east-1"
+        - name: KMS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: autosnipe-secrets
+              key: kms-key-id
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 20
+          periodSeconds: 20

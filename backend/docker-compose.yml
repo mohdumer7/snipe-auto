@@ -6,14 +6,24 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - MONGO_URI=mongodb://mongo/autosnipe
-      - JWT_SECRET=your_very_strong_jwt_secret
-      - ENCRYPTION_KEY=your_very_strong_encryption_key
-      - ALLOWED_ORIGINS=https://yourdomain.com,https://anotherdomain.com
+      NODE_ENV: production
+      PORT: 3000
+      MONGO_URI: mongodb://mongo/autosnipe
+      JWT_SECRET: your_very_strong_jwt_secret
+      ENCRYPTION_KEY: your_very_strong_encryption_key
+      ALLOWED_ORIGINS: "https://yourdomain.com,https://anotherdomain.com"
+      RPC_PROVIDER_URL: https://api.mainnet-beta.solana.com
+      SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
+      ETHEREUM_RPC_URL: https://mainnet.infura.io/v3/YOUR_INFURA_KEY
+      TOKEN_MONITOR_PROGRAM_ID: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      AWS_REGION: us-east-1
+      KMS_KEY_ID: arn:aws:kms:us-east-1:123456789012:key/your-key-id
     depends_on:
       - mongo
+      - redis
+
   mongo:
     image: mongo:latest
     restart: always
@@ -21,3 +31,9 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: autosnipe
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"

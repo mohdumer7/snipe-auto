@@ -1,23 +1,32 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18
+# Stage 1: Build the application
+FROM node:18 AS builder
 
-# Create and set the working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package.json files and install dependencies
 COPY package*.json ./
+RUN npm ci
 
-# Install app dependencies
-RUN npm install --production
-
-# Copy the rest of the application code
+# Copy the entire codebase and build the project
 COPY . .
-
-# Build the app (if using TypeScript, otherwise adjust accordingly)
 RUN npm run build
 
-# Expose the port that your app runs on
+# Stage 2: Production image
+FROM node:18-slim
+
+WORKDIR /usr/src/app
+
+# Copy package.json files
+COPY --from=builder /usr/src/app/package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production
+
+# Copy built source code from builder
+COPY --from=builder /usr/src/app/dist ./dist
+
+# Expose the port (configured via env)
 EXPOSE 3000
 
-# Define the command to run your app
+# Start the application
 CMD ["node", "dist/main.js"]
