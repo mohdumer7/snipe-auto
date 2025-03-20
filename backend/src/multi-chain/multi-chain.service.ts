@@ -14,50 +14,42 @@ export class MultiChainService {
     private solanaChainService: SolanaChainService,
     private ethereumChainService: EthereumChainService,
   ) {
-    // Map chain names to their implementations.
     this.chainServices = {
       solana: this.solanaChainService,
       ethereum: this.ethereumChainService,
-      // Add additional chain services as needed.
+      // Add additional chains if needed.
     };
   }
 
   async getTokensByChain(chain: string): Promise<any[]> {
-    // Dummy implementation: return tokens based on the provided chain.
+    // Dummy implementation: return tokens based on chain.
     if (chain.toLowerCase() === 'ethereum') {
-      return [
-        {
-          name: 'ETH_MEME1',
-          mintAddress: 'EthereumTokenMint1',
-          chain: 'ethereum',
-          liquidity: 50,
-          marketCap: 500000,
-          ageSeconds: 300,
-        },
-      ];
+      return [{
+        name: 'ETH_MEME1',
+        mintAddress: 'EthereumTokenMint1',
+        chain: 'ethereum',
+        liquidity: 50,
+        marketCap: 500000,
+        ageSeconds: 300,
+      }];
     } else if (chain.toLowerCase() === 'bsc') {
-      return [
-        {
-          name: 'BSC_MEME1',
-          mintAddress: 'BSCTokenMint1',
-          chain: 'bsc',
-          liquidity: 30,
-          marketCap: 150000,
-          ageSeconds: 120,
-        },
-      ];
+      return [{
+        name: 'BSC_MEME1',
+        mintAddress: 'BSCTokenMint1',
+        chain: 'bsc',
+        liquidity: 30,
+        marketCap: 150000,
+        ageSeconds: 120,
+      }];
     } else {
-      // Default to Solana.
-      return [
-        {
-          name: 'SOL_MEME1',
-          mintAddress: 'SolanaTokenMint1',
-          chain: 'solana',
-          liquidity: 5,
-          marketCap: 9000,
-          ageSeconds: 10,
-        },
-      ];
+      return [{
+        name: 'SOL_MEME1',
+        mintAddress: 'SolanaTokenMint1',
+        chain: 'solana',
+        liquidity: 5,
+        marketCap: 9000,
+        ageSeconds: 10,
+      }];
     }
   }
 

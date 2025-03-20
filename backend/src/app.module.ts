@@ -1,9 +1,9 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BullModule } from '@nestjs/bull';
 
-// Import all other modules...
+// Import modules
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TokenModule } from './token/token.module';
@@ -15,12 +15,8 @@ import { SentimentModule } from './sentiment/sentiment.module';
 import { RiskManagementModule } from './risk-management/risk-management.module';
 import { MultiChainModule } from './multi-chain/multi-chain.module';
 import { AnalyticsModule } from './analytics/analytics.module';
-import { AlertsModule } from './alerts/alerts.module';
-import { BullModule } from '@nestjs/bull';
-// Import Observability Module
 import { ObservabilityModule } from './observability/observability.module';
 import { WalletModule } from './wallet/wallet.module';
-import { TokenMonitoringService } from './token/token-monitoring.service';
 
 @Module({
   imports: [
@@ -29,6 +25,12 @@ import { TokenMonitoringService } from './token/token-monitoring.service';
       envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
     }),
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/autosnipe'),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      },
+    }),
     AuthModule,
     UserModule,
     TokenModule,
@@ -40,20 +42,8 @@ import { TokenMonitoringService } from './token/token-monitoring.service';
     RiskManagementModule,
     MultiChainModule,
     AnalyticsModule,
-    AlertsModule,
-    ObservabilityModule, 
+    ObservabilityModule,
     WalletModule,
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379', 10) || 6379,
-      },
-    }),
-    BullModule.registerQueue({
-      name: 'token-monitoring',
-    }),
   ],
-  controllers: [],
-  providers: [TokenMonitoringService],
 })
 export class AppModule {}

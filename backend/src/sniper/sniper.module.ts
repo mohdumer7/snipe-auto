@@ -1,15 +1,15 @@
-// src/sniper/sniper.module.ts
-import { Module } from '@nestjs/common';
-import { SniperService } from './sniper.service';
+import { Module, forwardRef } from '@nestjs/common';
 import { SniperController } from './sniper.controller';
-import { TokenModule } from '../token/token.module'; // Import TokenModule
-import { TradingModule } from '../trading/trading.module';
-import { UserModule } from '../user/user.module';
+import { AiSniperService } from './ai-sniper.service';
+import { forwardRef as fwd } from '@nestjs/common';
+import { TokenModule } from '../token/token.module';
 
 @Module({
-  imports: [TokenModule, TradingModule, UserModule],
-  providers: [SniperService],
+  imports: [
+    forwardRef(() => TokenModule),
+  ],
   controllers: [SniperController],
-  exports: [SniperService],
+  providers: [AiSniperService],
+  exports: [AiSniperService],
 })
 export class SniperModule {}

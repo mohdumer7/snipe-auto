@@ -16,13 +16,13 @@ export class SolanaChainService implements IChainService {
 
   async buyToken(userWallet: string, tokenAddress: string, amount: number): Promise<any> {
     this.logger.log(`Solana: Buying token ${tokenAddress} for wallet ${userWallet}`);
-    // Production implementation goes here.
+    // Production-grade implementation goes here.
     return { success: true, chain: 'solana' };
   }
 
   async sellToken(userWallet: string, tokenAddress: string, amount: number): Promise<any> {
     this.logger.log(`Solana: Selling token ${tokenAddress} for wallet ${userWallet}`);
-    // Production implementation goes here.
+    // Production-grade implementation goes here.
     return { success: true, chain: 'solana' };
   }
 }

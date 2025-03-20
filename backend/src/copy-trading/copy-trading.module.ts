@@ -1,13 +1,14 @@
-// src/copy-trading/copy-trading.module.ts
 import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bull';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CopyTradingService } from './copy-trading.service';
 import { CopyTradingController } from './copy-trading.controller';
-import { FollowedWallet, FollowedWalletSchema } from './schemas/followed-wallet.schema';
+import { CopyTrade, CopyTradeSchema } from './schemas/copy-trade.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: FollowedWallet.name, schema: FollowedWalletSchema }]),
+    MongooseModule.forFeature([{ name: CopyTrade.name, schema: CopyTradeSchema }]),
+    BullModule.registerQueue({ name: 'copy-trading' }),
   ],
   controllers: [CopyTradingController],
   providers: [CopyTradingService],
