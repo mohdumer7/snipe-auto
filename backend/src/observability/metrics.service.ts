@@ -1,11 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as client from 'prom-client';
 
 @Injectable()
-export class MetricsService {
+export class MetricsService implements OnModuleInit {
   private readonly logger = new Logger(MetricsService.name);
 
-  // Define custom metrics
   keyDecryptionDuration = new client.Histogram({
     name: 'wallet_key_decryption_duration_seconds',
     help: 'Time taken to decrypt wallet key using AWS KMS',
@@ -23,8 +22,13 @@ export class MetricsService {
     help: 'Total number of errors encountered',
   });
 
+  onModuleInit() {
+    // Ensure default metrics are collected only once
+    client.register.clear();
+    client.collectDefaultMetrics();
+    this.logger.log('Default metrics collected');
+  }
 
-  
   recordKeyDecryption(duration: number) {
     this.keyDecryptionDuration.observe(duration);
   }

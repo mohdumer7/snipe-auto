@@ -14,11 +14,13 @@ export class BluechipService {
     if (!token) {
       throw new Error(`Token with mint ${mintAddress} not found`);
     }
-    const marketCapThreshold = 1000000;
-    const liquidityThreshold = 100;
+    const marketCapThreshold = 1000000; // $1M threshold
+    const liquidityThreshold = 100;     // Placeholder
     const ageThresholdDays = 7;
     const ageDays = (Date.now() - (token.creationTime ? token.creationTime.getTime() : Date.now())) / (1000 * 60 * 60 * 24);
-    const isBluechip = token.marketCap >= marketCapThreshold && token.liquidity >= liquidityThreshold && ageDays >= ageThresholdDays;
+    const isBluechip = token.marketCap >= marketCapThreshold &&
+                       token.liquidity >= liquidityThreshold &&
+                       ageDays >= ageThresholdDays;
     token.bluechip = isBluechip;
     this.logger.log(`Token ${token.name} evaluated as bluechip: ${isBluechip}`);
     return token.save();

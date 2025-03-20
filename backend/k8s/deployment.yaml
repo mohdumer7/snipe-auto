@@ -18,12 +18,12 @@ spec:
       - name: autosnipe-api
         image: your-docker-repo/autosnipe-api:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 8000
         env:
         - name: NODE_ENV
           value: "production"
         - name: PORT
-          value: "3000"
+          value: "8000"
         - name: MONGO_URI
           valueFrom:
             secretKeyRef:
@@ -75,12 +75,12 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 3000
+            port: 8000
           initialDelaySeconds: 10
           periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /health
-            port: 3000
+            port: 8000
           initialDelaySeconds: 20
           periodSeconds: 20

@@ -1,4 +1,3 @@
-// src/common/filters/http-exception.filter.ts
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -10,6 +9,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+
+    // Extract correlation ID from request headers
+    const correlationId = request.headers['x-correlation-id'] || 'unknown';
 
     let status: number;
     let message: any;
@@ -27,15 +29,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
+      correlationId,
       message,
     };
 
-    // Log error details
-    this.logger.error(
-      `${request.method} ${request.url} ${status} - ${JSON.stringify(message)}`,
-      exception instanceof Error ? exception.stack : '',
-    );
-
+    this.logger.error(`[${correlationId}] ${request.method} ${request.url} ${status} - ${JSON.stringify(message)}`, exception instanceof Error ? exception.stack : '');
     response.status(status).json(errorResponse);
   }
 }

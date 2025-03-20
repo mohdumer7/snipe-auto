@@ -12,11 +12,9 @@ export class RugDetectionService {
   async analyzeToken(token: Token): Promise<Token> {
     let rugRisk = false;
     let scamPotential = false;
-    // Heuristic: liquidity < 1% of market cap is risky
     if (token.marketCap > 0 && token.liquidity < token.marketCap * 0.01) {
       rugRisk = true;
     }
-    // If developer wallet is unknown, flag as scam potential
     if (!token.developerWallet || token.developerWallet === 'Unknown') {
       scamPotential = true;
     }

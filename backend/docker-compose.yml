@@ -4,10 +4,10 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "8000:8000"
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 8000
       MONGO_URI: mongodb://mongo/autosnipe
       JWT_SECRET: your_very_strong_jwt_secret
       ENCRYPTION_KEY: your_very_strong_encryption_key

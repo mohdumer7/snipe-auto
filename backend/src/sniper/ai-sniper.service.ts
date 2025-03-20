@@ -25,7 +25,7 @@ export class AiSniperService {
       }
       if (token.liquidity >= config.minLiquidity && token.marketCap <= config.maxMarketCap) {
         this.logger.log(`Token ${token.name} meets sniper criteria for wallet ${config.userWalletAddress}`);
-        // In production, trigger a buy order through TradingService here.
+        // In production, trigger a buy order via TradingService.
       }
     }
   }

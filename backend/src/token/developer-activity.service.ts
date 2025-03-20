@@ -16,7 +16,7 @@ export class DeveloperActivityService {
     const publicKey = new PublicKey(developerWalletAddress);
     this.connection.onLogs(publicKey, (logs, ctx) => {
       this.logger.log(`Developer activity from ${developerWalletAddress}: ${JSON.stringify(logs)}`);
-      // In production, analyze logs for large sell events, liquidity removals, etc.
+      // In production, analyze logs for suspicious activity.
     });
   }
 }

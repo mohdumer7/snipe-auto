@@ -1,4 +1,3 @@
-// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -13,38 +12,30 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // Global Input Validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
 
-  // Global Error Handling & Logging
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  // Security Enhancements
   app.use(helmet.default());
-  app.use(
-    rateLimit.default({
-      windowMs: 15 * 60 * 1000,
-      max: 100,
-    }),
-  );
-
-  const allowedOrigins =
-    configService.get<string>('ALLOWED_ORIGINS')?.split(',') || ['*'];
+  app.use(rateLimit.default({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }));
+console.log(configService.get<string>('ALLOWED_ORIGINS'))
+  const allowedOrigins = configService.get<string>('ALLOWED_ORIGINS')?.split(',') || ['*'];
   app.enableCors({ origin: allowedOrigins });
 
-  // Clear the default registry before collecting default metrics
+  // Clear default metrics and collect default metrics once.
   client.register.clear();
   client.collectDefaultMetrics();
 
-  const port = configService.get<number>('PORT') || 3000;
+  const port = configService.get<number>('PORT') || 8000;
   await app.listen(port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(`Application running on: ${await app.getUrl()}`);
 }
 bootstrap();
